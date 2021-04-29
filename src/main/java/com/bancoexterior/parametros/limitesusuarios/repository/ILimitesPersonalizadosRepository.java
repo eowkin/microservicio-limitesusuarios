@@ -16,71 +16,27 @@ import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto
 @Repository
 public interface ILimitesPersonalizadosRepository extends JpaRepository<LimitesPersonalizados, LimitesPersonalizadosPk>{
 	
-	String queryAll = "select new com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto "
-			+ "(t.id.codIbs, t.id.codMoneda, t.id.tipoTransaccion, t.montoMin, t.montoMax, t.montoTope, "
-			+ "t.montoMensual, t.montoDiario, t.flagActivo, t.codUsuario, t.fechaModificacion) "
-			+ " from LimitesPersonalizados t"
-			+ " where 1=1";
-	
-	@Query(value = queryAll)
-	public List<LimitesPersonalizadosDto> getAll();
-	
-	//Todas
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.id.codMoneda = ?2 and t.id.tipoTransaccion = ?3  and t.flagActivo = ?4")
-	public List<LimitesPersonalizadosDto> getByCodIbsAndCodMonedaAndTipoTransaccionAndFlagActivo(String codIbs, String codMoneda, String tipoTransaccion,  boolean flagActivo);
-	
-	//codIbs
-	@Query(value = queryAll + " and t.id.codIbs = ?1 ")
-	public List<LimitesPersonalizadosDto> getByCodIbs(String codIbs);
-	
-	//codIbsAndCodMoneda
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.id.codMoneda = ?2")
-	public List<LimitesPersonalizadosDto> getByCodIbsAndCodMoneda(String codIbs, String codMoneda);
-	
-	//codIbsAndTipoTransaccion
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.id.tipoTransaccion = ?2")
-	public List<LimitesPersonalizadosDto> getByCodIbsAndTipoTransaccion(String codIbs, String tipoTransaccion);
-	
-	//codIbsAndFlagActivo
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.flagActivo = ?2")
-	public List<LimitesPersonalizadosDto> getByCodIbsAndFlagActivo(String codIbs, boolean flagActivo);
 	
 	
-	//codIbsAndCodMonedaAndTipoTransaccion
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.id.tipoTransaccion = ?2 and t.id.codMoneda = ?3")
-	public List<LimitesPersonalizadosDto> getById(String codIbs, String tipoTransaccion, String codMoneda);
+	String queryNativo = "SELECT cod_ibs, cod_moneda, tipo_transaccion, monto_min, monto_max, monto_tope, monto_mensual, monto_diario,"
+			+ "flag_activo, cod_usuario, fecha_modificacion "
+			+ "FROM \"Convenio1\".\"Limites_personalizados\" "
+			+ "where cod_ibs= (case when ?1 = '' then cod_ibs else ?1 end) "
+			+ "and cod_moneda= (case when ?2 = '' then cod_moneda else ?2 end) "
+			+ "and tipo_transaccion= (case when ?3 = '' then tipo_transaccion else ?3 end) "
+			+ "and "
+			+ "	case when  ?4 = 'si' then		"
+			+ "		flag_activo= ?5 "
+			+ "	else 	"
+			+ "		flag_activo = flag_activo "
+			+ "	end";
 	
-	//codIbsAndCodMonedaAndFlagActivo
-	@Query(value = queryAll + " and t.id.codIbs = ?1 and t.id.codMoneda = ?2 and t.flagActivo = ?3")
-	public List<LimitesPersonalizadosDto> getByCodIbsAndCodMonedaAndFalgActivo(String codIbs, String codMoneda, boolean flagActivo);
+		//Todas
+		@Query(value = queryNativo, nativeQuery = true)
+		public List<LimitesPersonalizados> getLimitesClientesByNuevo(String codIbs, String codMoneda, String tipoTransaccion, String flag,  boolean flagActivo);
 	
-	//codMoneda
-	@Query(value = queryAll + " and t.id.codMoneda = ?1 ")
-	public List<LimitesPersonalizadosDto> getByCodMoneda(String codMoneda);
 	
-	//codMonedaAndTipoTransaccion
-	@Query(value = queryAll + " and t.id.codMoneda = ?1 and t.id.tipoTransaccion = ?2")
-	public List<LimitesPersonalizadosDto> getByCodMonedaAndTipoTransaccion(String codMoneda, String tipoTransaccion);
 	
-	//codMonedaAndFalgActivo
-	@Query(value = queryAll + " and t.id.codMoneda = ?1 and t.flagActivo = ?2")
-	public List<LimitesPersonalizadosDto> getByCodMonedaAndFlagActivo(String codMoneda, boolean flagActivo);
-	
-	//codMonedaAndTipoTransaccionAndFalgActivo
-	@Query(value = queryAll + " and t.id.codMoneda = ?1 and t.id.tipoTransaccion = ?2 and t.flagActivo = ?3")
-	public List<LimitesPersonalizadosDto> getByCodMonedaAndTipoTransaccionAndFlagActivo(String codMoneda, String tipoTransaccion,boolean flagActivo);
-	
-	//tipoTransaccion
-	@Query(value = queryAll + " and t.id.tipoTransaccion = ?1 ")
-	public List<LimitesPersonalizadosDto> getByTipoTransaccion(String tipoTransaccion);
-	
-	//tipoTransaccionAndFlagActivo
-	@Query(value = queryAll + " and t.id.tipoTransaccion = ?1 and t.flagActivo = ?2")
-	public List<LimitesPersonalizadosDto> getByTipoTransaccionAndFlagActivo(String tipoTransaccion, boolean flagActivo);
-	
-	//FlagActivo
-	@Query(value = queryAll + " and t.flagActivo = ?1")
-	public List<LimitesPersonalizadosDto> getByFlagActivo(boolean flagActivo);
-	
+		
 	
 }

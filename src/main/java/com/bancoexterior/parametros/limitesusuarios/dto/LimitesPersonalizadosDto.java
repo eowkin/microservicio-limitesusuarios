@@ -1,6 +1,7 @@
 package com.bancoexterior.parametros.limitesusuarios.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,19 +23,19 @@ public class LimitesPersonalizadosDto implements Serializable{
 	private String tipoTransaccion;
 	
 	@JsonProperty("montoMin")
-	private Double montoMin;
+	private BigDecimal montoMin;
 	
 	@JsonProperty("montoMax")
-	private Double montoMax;
+	private BigDecimal montoMax;
 	
 	@JsonProperty("montoTope")
-	private Double montoTope;
+	private BigDecimal montoTope;
 	
 	@JsonProperty("montoMensual")
-	private Double montoMensual;
+	private BigDecimal montoMensual;
 	
 	@JsonProperty("montoDiario")
-	private Double montoDiario;
+	private BigDecimal montoDiario;
 	
 	@JsonProperty("flagActivo")
 	private Boolean flagActivo;

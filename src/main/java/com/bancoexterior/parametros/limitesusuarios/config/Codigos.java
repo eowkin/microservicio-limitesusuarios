@@ -1,9 +1,19 @@
 package com.bancoexterior.parametros.limitesusuarios.config;
 
+
+
 import lombok.Data;
 
 public class Codigos {
 
+	@Data
+	public class Ambientes{
+		
+		public static final String DESARROLLO = "des";
+		public static final String CALIDAD    = "qa";
+		public static final String PRODUCCION = "pro";
+	}
+	
 	@Data
 	public class CodRespuesta{
 		//ok
@@ -25,11 +35,21 @@ public class Codigos {
 		//entrada tasa
 		public static final String CDE1009 = "1009";
 		public static final String CDE1010 = "1010";
+		public static final String CDE1011 = "1011";
+		public static final String CDE1012 = "1012";
+		public static final String CDE1013 = "1013";
+		
+		public static final String CDE2000 = "2000";
+		public static final String CDE2001 = "2001";
+		public static final String CDE2003 = "2003";
+		
 		
 		
 		////GENERAL
     	public static final String CME6000 = "6000";
+    	public static final String CME6001 = "6001";
 		public static final String CME6002 = "6002";
+	
 		
 	}
 	
@@ -75,45 +95,32 @@ public class Codigos {
 		public static final String APP_JSON                           = "application/json";
 		public static final String EXC                                = "Exc:";
 		public static final String ERROR                              = "@@Error";
+		public static final String RIF                                = "J000000000";
+		public static final String CEDULA                             = "V00000000";
+		public static final String TELEFONO                           = "00000000000000";
 	}
 	
 	
 	@Data
 	public class Servicios{
 		
-		//monedas
-		public static final String MONEDASURLV1       = "/v1/parametros/monedas";
-		public static final String MONEDAIDURLV1       = "/v1/parametros/monedas/{codMoneda}";
-		public static final String MONEDASPARAMURLV1       = "/v1/parametros/monedas/codMoneda/{codMoneda}/flagActivo/{flagActivo}";
-		public static final String MONEDASFLAGACTIVOURLV1       = "/v1/parametros/monedas/flagActivo/{flagActivo}";
-		public static final String PRUEBAMONEDASURLV1       = "/v11/parametros/monedas";
-		
-		public static final String PRUEBAMONEDAIDURLV1       = "/v11/parametros/monedas/{codMoneda}";
-		
-		//tasas
-		public static final String TASASURLV1       = "/v1/parametros/tasas";
-		public static final String TASASPARAMETERURLV1       = "/v1/parametros/tasas/codMonedaOrigen/{codMonedaOrigen}/codMonedaDestino/{codMonedaDestino}";
-		public static final String TASASPARAMETERCODMONEDAORIGENURLV1       = "/v1/parametros/tasas/codMonedaOrigen/{codMonedaOrigen}";
-		public static final String TASASPARAMETERCODMONEDADESTINOURLV1       = "/v1/parametros/tasas/codMonedaDestino/{codMonedaDestino}";
 		
 		//limitesGenerales
-		public static final String LIMITESGENERALESURLV1       = "/v1/parametros/limites";
-		public static final String LIMITESGENERALESPARAMETERIDURLV1       = "/v1/parametros/limites/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/naturaleza/{naturaleza}";
-		public static final String LIMITESGENERALESALLPARAMETERURLV1       = "/v1/parametros/limites/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/naturaleza/{naturaleza}/flagActivo/{flagActivo}";
 		
-		//limitesGenerales
-		public static final String LIMITESUSUARIOSURLV1       = "/v1/parametros/limitesusuarios";
+		public static final String LIMITESUSUARIOSURLV1       = "/v1/parametros/limitesclientes";
 		public static final String LIMITESUSUARIOSPARAMETERIDURLV1       = "/v1/parametros/limitesusuarios/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/codIbs/{codIbs}";
 		
-		//Monedas
-		public static final String MONEDAS            = "Convenio1-Moneda";
-		public static final String MONEDASACTUALIZAR  = "Convenio1-Moneda Actualizacion";
-		public static final String MONEDASCONTROLLERI = "[==== INICIO Convenio n° 1 Monedas - Controller ====]";
-		public static final String MONEDASCONTROLLERF = "[==== FIN Convenio n° 1 Monedas - Controller ====]";
-		public static final String MONEDASSERVICEI    = "==== INICIO Convenio 1 - Monedas ====";
-		public static final String MONEDASSERVICEF    = "==== FIN Convenio 1 - Monedas ====";
 		
 		//Consultas
+		public static final String LIMITESCLIENTE            = "Convenio1-LimitesCliente";
+		public static final String LIMITESCLIENTEACTUALIZAR  = "Convenio1-LimitesCliente Actualizacion";
+		public static final String LIMITESCLIENTECONTROLLERI = "[==== INICIO Convenio n° 1 LimitesCliente - Controller ====]";
+		public static final String LIMITESCLIENTECONTROLLERF = "[==== FIN Convenio n° 1 LimitesCliente - Controller ====]";
+		public static final String LIMITESCLIENTESERVICEICREAR    = "==== INICIO Convenio 1 - LimitesCliente - Service - Crear ====";
+		public static final String LIMITESCLIENTESERVICEFCREAR    = "==== FIN Convenio 1 - LimitesCliente - Service - Crear ====";
+		public static final String LIMITESCLIENTESERVICEIACTUALIZAR    = "==== INICIO Convenio 1 - LimitesCliente - Service - Actualizar ====";
+		public static final String LIMITESCLIENTESERVICEFACTUALIZAR    = "==== FIN Convenio 1 - LimitesCliente - Service - Actualizar ====";
+		
 		public static final String MONEDASCONSULTASERVICEI    = "==== INICIO Convenio 1 - Monedas Consultas ====";
 		public static final String MONEDASCONSULTASERVICEF    = "==== FIN Convenio 1 - Monedas Consultas ====";
 		

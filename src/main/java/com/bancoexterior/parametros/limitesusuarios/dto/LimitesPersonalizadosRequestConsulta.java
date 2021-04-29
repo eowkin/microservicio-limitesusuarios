@@ -38,7 +38,7 @@ public class LimitesPersonalizadosRequestConsulta implements Serializable{
 	@Pattern(regexp=ParamConfig.CANAL, message=CodRespuesta.CDE1008)
 	private String canalCM;
 	
-	@JsonProperty("limiteUsuario")
+	@JsonProperty("limiteCliente")
 	@ANotEmptyValidate(message=CodRespuesta.CDE1003)
 	@Valid
 	private LimitesPersonalizadosDtoRequestConsulta  limitesPersonalizadosDtoRequestConsulta;

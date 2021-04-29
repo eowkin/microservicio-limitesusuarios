@@ -1,26 +1,37 @@
 package com.bancoexterior.parametros.limitesusuarios.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.bancoexterior.parametros.limitesusuarios.model.RegistrarAuditoriaRequest;
+import com.bancoexterior.parametros.limitesusuarios.interfase.IRegistrarAuditoriaService;
 import com.bancoexterior.parametros.limitesusuarios.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.limitesusuarios.config.Codigos.Constantes;
+import com.bancoexterior.parametros.limitesusuarios.config.Codigos.Servicios;
 import com.bancoexterior.parametros.limitesusuarios.response.Resultado;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoConsulta;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoRequestConsulta;
+import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoRequestCrear;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoResponse;
+import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoResponseActualizar;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestConsulta;
+import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestCrear;
 import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizados;
+import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizadosPk;
 import com.bancoexterior.parametros.limitesusuarios.repository.ILimitesPersonalizadosRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,191 +41,76 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosService{
 
+	private static final Logger LOGGER = LogManager.getLogger(LimitesPersonalizadosServiceImpl.class);
+	
 	@Autowired
 	private ILimitesPersonalizadosRepository repo;
 	
 	@Autowired
+	private IRegistrarAuditoriaService registrarA;
+	
+	
+	@Autowired
 	private Environment env;
 	
-	@Override
-	public List<LimitesPersonalizados> findAll() {
-		return repo.findAll();
-	}
-
-	@Override
-	public List<LimitesPersonalizadosDto> findAllDto() {
-		
-		return repo.getAll();
-	}
+	
 
 	
+
+	
+	
+	
 	@Override
-	public List<LimitesPersonalizadosDto> findAllDto(LimitesPersonalizadosDtoConsulta limitesPersonalizadosDtoConsulta) {
-		List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto = null;
-		log.info("codIbs: "+limitesPersonalizadosDtoConsulta.getCodIbs());
-		log.info("codMoneda: "+limitesPersonalizadosDtoConsulta.getCodMoneda());
-		log.info("tipoTransaccion: "+limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-		log.info("flagActivo: "+limitesPersonalizadosDtoConsulta.getFlagActivo());
+	public List<LimitesPersonalizadosDto> findAllDtoNuevo(
+			LimitesPersonalizadosDtoConsulta limitesPersonalizadosDtoConsulta) {
 		
-		//Todas
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-				&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-			listLimitesPersonalizadosDto = repo.getByCodIbsAndCodMonedaAndTipoTransaccionAndFlagActivo(limitesPersonalizadosDtoConsulta.getCodIbs(), limitesPersonalizadosDtoConsulta.getCodMoneda(), 
-					limitesPersonalizadosDtoConsulta.getTipoTransaccion(), limitesPersonalizadosDtoConsulta.getFlagActivo());
-			log.info(""+listLimitesPersonalizadosDto.size());
+		String codIbs = Constantes.BLANK;
+		String codMoneda = Constantes.BLANK;
+		String tipoTransaccion = Constantes.BLANK;
+		String flag = Constantes.BLANK;
+		boolean flagActivo = false;
+		
+		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null) {
+			codIbs = limitesPersonalizadosDtoConsulta.getCodIbs();
 		}
 		
-		//codIbs
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-				&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-			listLimitesPersonalizadosDto = repo.getByCodIbs(limitesPersonalizadosDtoConsulta.getCodIbs());
-			log.info(""+listLimitesPersonalizadosDto.size());
+		if (limitesPersonalizadosDtoConsulta.getCodMoneda() != null) {
+			codMoneda = limitesPersonalizadosDtoConsulta.getCodMoneda();
 		}
 		
-		//codIbsAndCodMoneda
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getByCodIbsAndCodMoneda(limitesPersonalizadosDtoConsulta.getCodIbs(), limitesPersonalizadosDtoConsulta.getCodMoneda());
-				log.info(""+listLimitesPersonalizadosDto.size());
+		if (limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null) {
+			tipoTransaccion = limitesPersonalizadosDtoConsulta.getTipoTransaccion();
 		}
 		
-		//codIbsAndTipoTransaccion
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getByCodIbsAndTipoTransaccion(limitesPersonalizadosDtoConsulta.getCodIbs(), limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-				log.info(""+listLimitesPersonalizadosDto.size());
+		if (limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
+			flag = "si";
+			flagActivo = limitesPersonalizadosDtoConsulta.getFlagActivo();
 		}
 		
-		//codIbsAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByCodIbsAndFlagActivo(limitesPersonalizadosDtoConsulta.getCodIbs(), limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
+		List<LimitesPersonalizados> listLimitesPersonalizados = repo.getLimitesClientesByNuevo(codIbs, codMoneda, tipoTransaccion, flag, flagActivo);
+		List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto = new ArrayList<>();
+		
+		for (LimitesPersonalizados limitesPersonalizados : listLimitesPersonalizados) {
+			LimitesPersonalizadosDto limitesPersonalizadosDto = new LimitesPersonalizadosDto();
+			limitesPersonalizadosDto.setCodIbs(limitesPersonalizados.getId().getCodIbs());
+			limitesPersonalizadosDto.setCodMoneda(limitesPersonalizados.getId().getCodMoneda());
+			limitesPersonalizadosDto.setTipoTransaccion(limitesPersonalizados.getId().getTipoTransaccion());
+			limitesPersonalizadosDto.setMontoMin(limitesPersonalizados.getMontoMin());
+			limitesPersonalizadosDto.setMontoMax(limitesPersonalizados.getMontoMax());
+			limitesPersonalizadosDto.setMontoTope(limitesPersonalizados.getMontoTope());
+			limitesPersonalizadosDto.setMontoMensual(limitesPersonalizados.getMontoMensual());
+			limitesPersonalizadosDto.setMontoDiario(limitesPersonalizados.getMontoDiario());
+			limitesPersonalizadosDto.setCodUsuario(limitesPersonalizados.getCodUsuario());
+			limitesPersonalizadosDto.setFlagActivo(limitesPersonalizados.getFlagActivo());
+			limitesPersonalizadosDto.setFechaModificacion(limitesPersonalizados.getFechaModificacion());
+			
+			listLimitesPersonalizadosDto.add(limitesPersonalizadosDto);
 		}
 		
-		//codIbsAndCodMonedaAndTipoTransaccion
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getById(limitesPersonalizadosDtoConsulta.getCodIbs(), limitesPersonalizadosDtoConsulta.getTipoTransaccion(),
-						limitesPersonalizadosDtoConsulta.getCodMoneda());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codIbsAndCodMonedaAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByCodIbsAndCodMonedaAndFalgActivo(limitesPersonalizadosDtoConsulta.getCodIbs(), 
-						limitesPersonalizadosDtoConsulta.getCodMoneda(), limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codIbsAndTipoTransaccionAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() != null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByCodIbsAndCodMonedaAndFalgActivo(limitesPersonalizadosDtoConsulta.getCodIbs(), 
-						limitesPersonalizadosDtoConsulta.getTipoTransaccion(), limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codMoneda
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getByCodMoneda(limitesPersonalizadosDtoConsulta.getCodMoneda());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codMonedaAndTipoTransaccion
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getByCodMonedaAndTipoTransaccion(limitesPersonalizadosDtoConsulta.getCodMoneda(), limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codMonedaAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByCodMonedaAndFlagActivo(limitesPersonalizadosDtoConsulta.getCodMoneda(), limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//codMonedaAndTipoTransaccionAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() != null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByCodMonedaAndTipoTransaccionAndFlagActivo(limitesPersonalizadosDtoConsulta.getCodMoneda(), 
-						limitesPersonalizadosDtoConsulta.getTipoTransaccion(),limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//tipoTransaccion
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getByTipoTransaccion(limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//tipoTransaccionAndFlagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() != null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByTipoTransaccionAndFlagActivo(limitesPersonalizadosDtoConsulta.getTipoTransaccion(), 
-						limitesPersonalizadosDtoConsulta.getFlagActivo());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//flagActivo
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() != null) {
-				listLimitesPersonalizadosDto = repo.getByTipoTransaccion(limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
-		
-		//All Todos los valores null
-		if (limitesPersonalizadosDtoConsulta.getCodIbs() == null && limitesPersonalizadosDtoConsulta.getCodMoneda() == null 
-			&& limitesPersonalizadosDtoConsulta.getTipoTransaccion() == null && limitesPersonalizadosDtoConsulta.getFlagActivo() == null) {
-				listLimitesPersonalizadosDto = repo.getAll();
-				log.info(""+listLimitesPersonalizadosDto.size());
-		}
 		return listLimitesPersonalizadosDto;
 	}
 	
 	
-	@Override
-	public LimitesPersonalizadosDtoResponse findAllDtoResponse() {
-		LimitesPersonalizadosDtoResponse response = new LimitesPersonalizadosDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto = repo.getAll();
-		
-		if (listLimitesPersonalizadosDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		response.setResultado(resultado);
-		response.setListLimitesPersonalizadosDto(listLimitesPersonalizadosDto);
-		return response;
-	}
-
-	@Override
-	public LimitesPersonalizadosDtoResponse findByIdDtoResponse(String codMoneda, String tipoTransaccion, String codIbs) {
-		LimitesPersonalizadosDtoResponse response = new LimitesPersonalizadosDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto = repo.getById(codMoneda, tipoTransaccion, codIbs);
-		
-		if (listLimitesPersonalizadosDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		response.setResultado(resultado);
-		response.setListLimitesPersonalizadosDto(listLimitesPersonalizadosDto);
-		return response;
-	}
-
 	@Override
 	public LimitesPersonalizadosDtoResponse consultaLimitesPersonalizados(
 			LimitesPersonalizadosRequestConsulta request) {
@@ -241,7 +137,8 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 				log.info("flagActivoDto: "+limitesPersonalizadosDtoConsulta.getFlagActivo());
 				
 				//consulta BD
-				listLimitesPersonalizadosDto = this.findAllDto(limitesPersonalizadosDtoConsulta);
+				//listLimitesPersonalizadosDto = this.findAllDto(limitesPersonalizadosDtoConsulta);
+				listLimitesPersonalizadosDto = this.findAllDtoNuevo(limitesPersonalizadosDtoConsulta);
 				response.setListLimitesPersonalizadosDto(listLimitesPersonalizadosDto);
 				log.info("antes de llamara validaConsulta");
 				//Validar Respuesta
@@ -331,4 +228,199 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 		
 	}
 
+	@Override
+	public LimitesPersonalizadosDtoResponseActualizar crear(LimitesPersonalizadosRequestCrear request,
+			HttpServletRequest requestHTTP) {
+		LOGGER.info(Servicios.LIMITESCLIENTESERVICEICREAR);
+		LOGGER.info(request);
+		String microservicio = Servicios.LIMITESCLIENTE;
+		
+		RegistrarAuditoriaRequest reAU = null;
+		
+		reAU = new RegistrarAuditoriaRequest(request, microservicio, requestHTTP);
+		String errorM = Constantes.BLANK;
+		String codigo =  CodRespuesta.C0000;
+		
+		LimitesPersonalizados obj = new LimitesPersonalizados();
+		LimitesPersonalizadosDtoResponseActualizar response = new LimitesPersonalizadosDtoResponseActualizar();
+		Resultado resultado = new Resultado();
+		resultado.setCodigo(CodRespuesta.C0000);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
+		
+		try {
+			LimitesPersonalizadosDtoRequestCrear dtoRequestCrear = request.getLimitesPersonalizadosDtoRequestCrear();
+			LimitesPersonalizadosPk id = new LimitesPersonalizadosPk();
+			id.setCodIbs(dtoRequestCrear.getCodIbs());
+			id.setCodMoneda(dtoRequestCrear.getCodMoneda());
+			id.setTipoTransaccion(dtoRequestCrear.getTipoTransaccion());
+			obj.setId(id);
+			obj.setMontoMin(dtoRequestCrear.getMontoMin());
+			obj.setMontoMax(dtoRequestCrear.getMontoMax());
+			obj.setMontoTope(dtoRequestCrear.getMontoTope());
+			obj.setMontoMensual(dtoRequestCrear.getMontoMensual());
+			obj.setMontoDiario(dtoRequestCrear.getMontoDiario());
+			obj.setCodUsuario(request.getCodUsuarioMR());
+			obj.setFlagActivo(dtoRequestCrear.getFlagActivo());
+			LOGGER.info(obj);
+			repo.save(obj);
+			response.setResultado(resultado);
+			
+			
+		} catch (Exception e) {
+			LOGGER.error(e);
+			codigo = CodRespuesta.CME6001;
+			errorM = Constantes.EXC+e;
+			response.getResultado().setCodigo(CodRespuesta.CME6001);
+			response.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
+		}
+		
+		resultado.setCodigo(codigo);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
+		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal(request.getCanalCM());
+			registrarAuditoriaBD(reAU, resultado, errorM);
+		}
+		
+		LOGGER.info(Servicios.LIMITESCLIENTESERVICEFCREAR);
+		return response;
+	}
+	
+	
+	@Override
+	public LimitesPersonalizadosDtoResponseActualizar actualizar(LimitesPersonalizadosRequestCrear request,
+			HttpServletRequest requestHTTP) {
+		LOGGER.info(Servicios.LIMITESCLIENTESERVICEIACTUALIZAR);
+		LOGGER.info(request);
+		String microservicio = Servicios.LIMITESCLIENTEACTUALIZAR;
+		
+		RegistrarAuditoriaRequest reAU = null;
+		
+		reAU = new RegistrarAuditoriaRequest(request, microservicio, requestHTTP);
+		String errorM = Constantes.BLANK;
+		String codigo =  CodRespuesta.C0000;
+		
+		LimitesPersonalizados obj = new LimitesPersonalizados();
+		LimitesPersonalizadosDtoResponseActualizar response = new LimitesPersonalizadosDtoResponseActualizar();
+		Resultado resultado = new Resultado();
+		resultado.setCodigo(CodRespuesta.C0000);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
+		
+		try {
+			LimitesPersonalizadosDtoRequestCrear dtoRequestCrear = request.getLimitesPersonalizadosDtoRequestCrear();
+			LimitesPersonalizadosPk id = new LimitesPersonalizadosPk();
+			id.setCodIbs(dtoRequestCrear.getCodIbs());
+			id.setCodMoneda(dtoRequestCrear.getCodMoneda());
+			id.setTipoTransaccion(dtoRequestCrear.getTipoTransaccion());
+			
+			LimitesPersonalizadosDto limitesPersonalizadosDto = this.findById(id);
+			
+			
+			obj.setId(id);
+			obj.setMontoMin(dtoRequestCrear.getMontoMin());
+			obj.setMontoMax(dtoRequestCrear.getMontoMax());
+			obj.setMontoTope(dtoRequestCrear.getMontoTope());
+			obj.setMontoMensual(dtoRequestCrear.getMontoMensual());
+			obj.setMontoDiario(dtoRequestCrear.getMontoDiario());
+			obj.setCodUsuario(request.getCodUsuarioMR());
+			obj.setFlagActivo(dtoRequestCrear.getFlagActivo());
+			obj.setFechaModificacion(limitesPersonalizadosDto.getFechaModificacion());
+			LOGGER.info(obj);
+			repo.save(obj);
+			response.setResultado(resultado);
+			
+			
+		} catch (Exception e) {
+			LOGGER.error(e);
+			codigo = CodRespuesta.CME6001;
+			errorM = Constantes.EXC+e;
+			response.getResultado().setCodigo(CodRespuesta.CME6001);
+			response.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
+		}
+		
+		resultado.setCodigo(codigo);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
+		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal(request.getCanalCM());
+			registrarAuditoriaBD(reAU, resultado, errorM);
+		}
+		
+		LOGGER.info(Servicios.LIMITESCLIENTESERVICEFACTUALIZAR);
+		return response;
+	}
+	
+	
+	
+	
+	/**
+     * Nombre:                 registrarAuditoriaBD
+     * Descripcion:            Registrar Auditoria en Web Service
+     *
+     * @param  req  Objeto RegistrarAuditoriaRequest
+     * @param  codigo   Codigo de respuesta
+     * @param descripcion Descripcion del resultado
+     * @version 1.0
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+	private void registrarAuditoriaBD(RegistrarAuditoriaRequest registrarAu,Resultado response, String errorAdicional) {
+			
+		        registrarA.registrarAuditoria(registrarAu, response.getCodigo(),response.getDescripcion(),errorAdicional);	
+	}
+
+
+
+
+	@Override
+	public boolean existsById(LimitesPersonalizadosPk id) {
+		return repo.existsById(id);
+	}
+
+
+
+
+	@Override
+	public LimitesPersonalizadosDto findById(LimitesPersonalizadosPk id) {
+		
+		LimitesPersonalizados limitesPersonalizados = repo.findById(id).orElse(null);
+		
+		if(limitesPersonalizados != null) {
+			LimitesPersonalizadosDto limitesPersonalizadosDto = new LimitesPersonalizadosDto();
+			limitesPersonalizadosDto.setCodIbs(limitesPersonalizados.getId().getCodIbs());
+			limitesPersonalizadosDto.setCodMoneda(limitesPersonalizados.getId().getCodMoneda());
+			limitesPersonalizadosDto.setTipoTransaccion(limitesPersonalizados.getId().getTipoTransaccion());
+			limitesPersonalizadosDto.setMontoMin(limitesPersonalizados.getMontoMin());
+			limitesPersonalizadosDto.setMontoMax(limitesPersonalizados.getMontoMax());
+			limitesPersonalizadosDto.setMontoTope(limitesPersonalizados.getMontoTope());
+			limitesPersonalizadosDto.setMontoMensual(limitesPersonalizados.getMontoMensual());
+			limitesPersonalizadosDto.setMontoDiario(limitesPersonalizados.getMontoDiario());
+			limitesPersonalizadosDto.setCodUsuario(limitesPersonalizados.getCodUsuario());
+			limitesPersonalizadosDto.setFlagActivo(limitesPersonalizados.getFlagActivo());
+			limitesPersonalizadosDto.setFechaModificacion(limitesPersonalizados.getFechaModificacion());
+			
+			return limitesPersonalizadosDto;
+			
+		}else {
+			return null;
+		}
+		
+		
+	}
+
+
+
+
+	
+
+
+
+
+	
 }
