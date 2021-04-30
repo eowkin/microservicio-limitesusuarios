@@ -41,6 +41,21 @@ public class LimitesPersonalizadosController {
 	private ILimitesPersonalizadosValidator limitesPersonalizadosValidator;
 	
 	
+	
+	
+	/**
+	 * Nombre: listAllLimitesPersonalizadosResponse 
+	 * Descripcion: Invocar metodo para listar todos los limite-clientes 
+	 * por los parametros enviados
+	 * 
+	 * @param limitesPersonalizadosRequestConsulta     Objeto tipo LimitesPersonalizadosRequestConsulta   
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return ResponseEntity<Object>
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @throws ApiUnprocessableEntity 
+	 * @since 12/04/21
+	 */
 	@PostMapping(path =Servicios.LIMITESUSUARIOSURLV1+"/consultas", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> listAllLimitesPersonalizadosResponse(@RequestBody LimitesPersonalizadosRequestConsulta  limitesPersonalizadosRequestConsulta, 
 			HttpServletRequest requestHTTP){
@@ -63,6 +78,19 @@ public class LimitesPersonalizadosController {
 		}
 	}
 	
+	/**
+	 * Nombre: crearLimitesPersonalizados 
+	 * Descripcion: Invocar metodo para ingresar un Limite-Cliente nuevo
+	 * 
+	 * @param request     Objeto tipo LimitesPersonalizadosRequestCrear   
+	 * @param result Objeto tipo BindingResult 
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return ResponseEntity<Object>
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @throws ApiUnprocessableEntity 
+	 * @since 12/04/21
+	 */
 	
 	@PostMapping(path =Servicios.LIMITESUSUARIOSURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> crearLimitesPersonalizados(@Valid  @RequestBody LimitesPersonalizadosRequestCrear request, BindingResult result, 
@@ -90,6 +118,20 @@ public class LimitesPersonalizadosController {
 		}
 	}
 	
+	
+	/**
+	 * Nombre: actualizarLimitesPersonalizados 
+	 * Descripcion: Invocar metodo para actualizar un Limite-Cliente nuevo
+	 * 
+	 * @param request     Objeto tipo LimitesPersonalizadosRequestCrear   
+	 * @param result Objeto tipo BindingResult 
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return ResponseEntity<Object>
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @throws ApiUnprocessableEntity 
+	 * @since 12/04/21
+	 */
 	@PutMapping(path =Servicios.LIMITESUSUARIOSURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> actualizarLimitesPersonalizados(@Valid  @RequestBody LimitesPersonalizadosRequestCrear request, BindingResult result, 
 			HttpServletRequest requestHTTP){

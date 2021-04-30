@@ -42,6 +42,7 @@ public class Codigos {
 		public static final String CDE2000 = "2000";
 		public static final String CDE2001 = "2001";
 		public static final String CDE2003 = "2003";
+		public static final String CDE2004 = "2004";
 		
 		
 		

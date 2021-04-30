@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -70,10 +69,7 @@ public class LimitesPersonalizados {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaModificacion;
 	
-	@PrePersist
-	public void prePersist() {
-		setFechaModificacion(new Date());
-	}
+	
 	
 	@PreUpdate
 	public void preUpdate() {

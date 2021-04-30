@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import com.bancoexterior.parametros.limitesusuarios.exception.ClientePersonalizadoNoExistException;
 import com.bancoexterior.parametros.limitesusuarios.exception.CodMonedaNoExistException;
 import com.bancoexterior.parametros.limitesusuarios.exception.FieldErrorValidationException;
 import com.bancoexterior.parametros.limitesusuarios.exception.LimitesClienteExistException;
 import com.bancoexterior.parametros.limitesusuarios.exception.LimitesClienteNotExistException;
 import com.bancoexterior.parametros.limitesusuarios.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.limitesusuarios.exception.TipoTransaccionNotValidException;
+import com.bancoexterior.parametros.limitesusuarios.service.IClientesPersonalizadosService;
 import com.bancoexterior.parametros.limitesusuarios.service.ILimitesPersonalizadosService;
 import com.bancoexterior.parametros.limitesusuarios.service.IMonedaService;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestCrear;
@@ -26,6 +28,9 @@ public class LimitesPersonalizadosValidatorImpl implements ILimitesPersonalizado
 
 	@Autowired
 	private ILimitesPersonalizadosService limiteService;
+	
+	@Autowired
+	private IClientesPersonalizadosService clienteService;
 	
 	@Autowired
 	private IMonedaService monedaService;
@@ -46,6 +51,11 @@ public class LimitesPersonalizadosValidatorImpl implements ILimitesPersonalizado
 		
 		if(!tipoTransaccion.equals("C") && !tipoTransaccion.equals("V")) {
 			throw new TipoTransaccionNotValidException(CodRespuesta.CDE1006);
+		}
+		
+		
+		if(!clienteService.existsById(codIbs)) {
+			throw new ClientePersonalizadoNoExistException(CodRespuesta.CDE2004);
 		}
 		
 		if(!monedaService.existsById(codMoneda)) {

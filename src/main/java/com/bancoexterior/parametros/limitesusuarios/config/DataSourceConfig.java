@@ -67,8 +67,8 @@ public class DataSourceConfig {
     	
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.postgresql.Driver");
-        dataSourceBuilder.url("jdbc:postgresql://localhost:5432/Convenio1");
-        //dataSourceBuilder.url("jdbc:postgresql://172.19.148.50:5432/Convenio1");
+        //dataSourceBuilder.url("jdbc:postgresql://localhost:5432/Convenio1");
+        dataSourceBuilder.url("jdbc:postgresql://172.19.148.50:5432/Convenio1");
         dataSourceBuilder.username(usuarioDecrypt);
         dataSourceBuilder.password(passwordDecrypt);
         return dataSourceBuilder.build();
