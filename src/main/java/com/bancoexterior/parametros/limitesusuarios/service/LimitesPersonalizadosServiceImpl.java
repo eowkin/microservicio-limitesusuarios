@@ -24,7 +24,6 @@ import com.bancoexterior.parametros.limitesusuarios.config.Codigos.Servicios;
 import com.bancoexterior.parametros.limitesusuarios.response.Resultado;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoConsulta;
-import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoRequestConsulta;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoRequestCrear;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoResponse;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoResponseActualizar;
@@ -34,10 +33,10 @@ import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizad
 import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizadosPk;
 import com.bancoexterior.parametros.limitesusuarios.repository.ILimitesPersonalizadosRepository;
 
-import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
+
+
 @Service
 public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosService{
 
@@ -58,7 +57,17 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 	
 
 	
-	
+	/**
+	 * Nombre: findAllDtoNuevo 
+	 * Descripcion: Invocar metodo para una busqueda de los limitesPersonalizados con
+	 * los parametros enviados.
+	 *
+	 * @param limitesPersonalizadosDtoConsulta     Objeto tipo LimitesPersonalizadosDtoConsulta  
+	 * @return List<LimitesPersonalizadosDto>
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	
 	@Override
 	public List<LimitesPersonalizadosDto> findAllDtoNuevo(
@@ -110,65 +119,77 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 		return listLimitesPersonalizadosDto;
 	}
 	
+	/**
+	 * Nombre: consultaLimitesGenerales 
+	 * Descripcion: Invocar metodo para la gestion de consulta a realizar
+	 * para la busqueda de los limitesPersonalizados con los parametros enviados.
+	 *
+	 * @param request     Objeto tipo LimitesPersonalizadosRequestConsulta 
+	 * @return LimitesPersonalizadosDtoResponse
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	
 	@Override
 	public LimitesPersonalizadosDtoResponse consultaLimitesPersonalizados(
 			LimitesPersonalizadosRequestConsulta request) {
-		log.info("\"==== INICIO Convenio 1 - LimitesPersonalizados Consultas ====\"");
+		LOGGER.info(Servicios.LIMITESCLIENTESCONSULTASERVICEI);
 		LimitesPersonalizadosDtoResponse response = new LimitesPersonalizadosDtoResponse();
 		Resultado resultado = new Resultado();
 		String codigo = CodRespuesta.C0000;
 		String errorCM = Constantes.BLANK;
 		List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto;
 		LimitesPersonalizadosDtoConsulta limitesPersonalizadosDtoConsulta = new LimitesPersonalizadosDtoConsulta(request);
-		LimitesPersonalizadosDtoRequestConsulta limitesPersonalizadosDtoRequestConsulta = request.getLimitesPersonalizadosDtoRequestConsulta();
-		log.info("codIbs: "+limitesPersonalizadosDtoRequestConsulta.getCodIbs());
-		log.info("codMoneda: "+limitesPersonalizadosDtoRequestConsulta.getCodMoneda());
-		log.info("tipoTransaccion: "+limitesPersonalizadosDtoRequestConsulta.getTipoTransaccion());
-		log.info("flagActivo: "+limitesPersonalizadosDtoRequestConsulta.getFlagActivo());
+		
 		
 		try {
 			codigo = validaDatosConsulta(request);
-			log.info("codigo: "+codigo);
+			LOGGER.info(codigo);
 			if(codigo.equalsIgnoreCase(CodRespuesta.C0000)) {
-				log.info("codIbs: "+limitesPersonalizadosDtoConsulta.getCodIbs());
-				log.info("codMonedaDto: "+limitesPersonalizadosDtoConsulta.getCodMoneda());
-				log.info("tipoTransaccionDto: "+limitesPersonalizadosDtoConsulta.getTipoTransaccion());
-				log.info("flagActivoDto: "+limitesPersonalizadosDtoConsulta.getFlagActivo());
 				
 				//consulta BD
-				//listLimitesPersonalizadosDto = this.findAllDto(limitesPersonalizadosDtoConsulta);
 				listLimitesPersonalizadosDto = this.findAllDtoNuevo(limitesPersonalizadosDtoConsulta);
 				response.setListLimitesPersonalizadosDto(listLimitesPersonalizadosDto);
-				log.info("antes de llamara validaConsulta");
+				
 				//Validar Respuesta
 				resultado = validaConsulta(listLimitesPersonalizadosDto);
-				log.info("luego de llamara validaConsulta");
-				log.info("resultado: "+resultado);
 				codigo = resultado.getCodigo();
-				log.info("codigo: "+codigo);
+				
 				errorCM = resultado.getDescripcion();
-				log.info("errorCM: "+errorCM);
+				
 			}
 			
 			
 		} catch (Exception e) {
-			log.error(""+e);
+			LOGGER.error(e);
 			codigo = CodRespuesta.CME6000;
 			errorCM = Constantes.EXC+e;
 		}
-		log.info("response: "+response);
+		
 		response.getResultado().setCodigo(codigo);
 		response.getResultado().setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorCM));
 		
-		log.info("tasaDtoResponse: "+response);
-		log.info("==== FIN Convenio 1 - LimitesPersonalizados ====");
+		
+		LOGGER.info(Servicios.LIMITESCLIENTESCONSULTASERVICEF);
 		return response;
 	}
 	
+	
+	
+	/**
+     * Nombre:                  validaDatosConsulta
+     * Descripcion:             Valida datos de entrada del metodo de consulta.
+     *
+     * @param request  Objeto LimitesPersonalizadosRequestConsulta 
+     * @return String  Codigo resultado de la evaluacion.
+     * @version 1.0
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	private String validaDatosConsulta(LimitesPersonalizadosRequestConsulta request) {
-		log.info("dentro de validarDatosConsulta");
-		log.info(""+request);
+		LOGGER.info("dentro de validarDatosConsulta");
+		
 		String codigo = CodRespuesta.C0000;
 		String codMoneda;
 		String tipoTransaccion;
@@ -185,7 +206,7 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 		request.getLimitesPersonalizadosDtoRequestConsulta().setTipoTransaccion(tipoTransaccion);
 		request.getLimitesPersonalizadosDtoRequestConsulta().setFlagActivo(flagActivo);
 		
-		log.info("antes de llamar factory");
+		
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 		Set<ConstraintViolation<LimitesPersonalizadosRequestConsulta>> errores = validator.validate(request);
@@ -204,6 +225,17 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 		return codigo;
 	}
 
+	/**
+     * Nombre:                  validaConsulta
+     * Descripcion:             Metodo para evaluar el resultado de la consulta de las monedas
+     *
+     * @param listLimitesPersonalizadosDto   Objeto List<LimitesPersonalizadosDto>  
+     * @return Resultado                Objeto con la información de la evaluacion.
+     * @version 1.0
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+	
 	private Resultado validaConsulta(List<LimitesPersonalizadosDto> listLimitesPersonalizadosDto) {
 		Resultado resultado = new Resultado();
 		resultado.setCodigo(CodRespuesta.C0000);
@@ -214,20 +246,25 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 			return resultado;
 		}
 
-		/*
-	    if(monedasBD.get(0).getCodMonedaBD().equalsIgnoreCase(Constantes.SERROR)) {
-	    	resultado.setCodigo(CodRespuesta.CME6002);
-	    	resultado.setDescripcion(monedasBD.get(0).getDescripcionBD());
-	    	 LOGGER.error(resultado);
-	    	return resultado;
-	    }*/
-
+		
 	    
-	    log.info(""+resultado);
+		LOGGER.info(resultado);
 		return resultado;
 		
 	}
 
+	/**
+	 * Nombre: crear 
+	 * Descripcion: Invocar metodo para crear un limitePersonalizado con
+	 * los parametros enviados.
+	 *
+	 * @param request     Objeto tipo LimitesPersonalizadosRequestCrear
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return LimitesPersonalizadosDtoResponseActualizar
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public LimitesPersonalizadosDtoResponseActualizar crear(LimitesPersonalizadosRequestCrear request,
 			HttpServletRequest requestHTTP) {
@@ -289,6 +326,18 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 		return response;
 	}
 	
+	/**
+	 * Nombre: actualizar 
+	 * Descripcion: Invocar metodo para actualizar un limitePesonalizado con
+	 * los parametros enviados.
+	 *
+	 * @param request     Objeto tipo LimitesPersonalizadosRequestCrear
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return LimitesPersonalizadosDtoResponseActualizar
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	
 	@Override
 	public LimitesPersonalizadosDtoResponseActualizar actualizar(LimitesPersonalizadosRequestCrear request,
@@ -377,7 +426,16 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 
 
 
-
+	/**
+	 * Nombre: existsById 
+	 * Descripcion: Invocar metodo para buscar si existe o no 
+	 * un limitePersonalizado por id.
+	 * @param id LimitesPersonalizadosPk    
+	 * @return boolean
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public boolean existsById(LimitesPersonalizadosPk id) {
 		return repo.existsById(id);
@@ -385,7 +443,17 @@ public class LimitesPersonalizadosServiceImpl implements ILimitesPersonalizadosS
 
 
 
-
+	/**
+	 * Nombre: findById 
+	 * Descripcion: Invocar metodo para una busqueda de un limite
+	 * por id.
+	 *
+	 * @param id LimitesPersonalizadosPk    
+	 * @return LimitesPersonalizadosDto
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public LimitesPersonalizadosDto findById(LimitesPersonalizadosPk id) {
 		

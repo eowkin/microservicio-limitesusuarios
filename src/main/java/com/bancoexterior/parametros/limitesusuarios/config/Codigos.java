@@ -1,21 +1,27 @@
 package com.bancoexterior.parametros.limitesusuarios.config;
 
 
-
-import lombok.Data;
-
 public class Codigos {
 
-	@Data
+	
 	public class Ambientes{
+		
+		private Ambientes() {
+			super();
+		}
 		
 		public static final String DESARROLLO = "des";
 		public static final String CALIDAD    = "qa";
 		public static final String PRODUCCION = "pro";
 	}
 	
-	@Data
+	
 	public class CodRespuesta{
+		
+		private CodRespuesta() {
+			super();
+		}
+		
 		//ok
 		public static final String C0000 = "0000";
 		public static final String C0001 = "0001";
@@ -54,14 +60,23 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class Annotation{
+		 
+		private Annotation() {
+			super();
+		}
+		
 		 public static final String OBJECTDEFAULT     = "[Objeto vacio]";
 		 public static final String FECHADEFAULT      = "[Fecha invalida]";
 	 }
 	
-	@Data
+	
 	public class ParamConfig{
+		
+		private ParamConfig() {
+			super();
+		}
 		
 		public static final String CANAL           = "^[a-zA-Z\\-0-9]{1,4}$";
 		public static final String IDSESIONVALID   = "uuuuMMddHHmmss";
@@ -74,8 +89,12 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class Constantes{
+		
+		private Constantes() {
+			super();
+		}
 		
 		public static final String MONEDADEFAULT                      = "000";
 		public static final String TRUE                               = "true";
@@ -102,9 +121,12 @@ public class Codigos {
 	}
 	
 	
-	@Data
+	
 	public class Servicios{
 		
+		private Servicios() {
+			super();
+		}
 		
 		//limitesGenerales
 		
@@ -122,8 +144,8 @@ public class Codigos {
 		public static final String LIMITESCLIENTESERVICEIACTUALIZAR    = "==== INICIO Convenio 1 - LimitesCliente - Service - Actualizar ====";
 		public static final String LIMITESCLIENTESERVICEFACTUALIZAR    = "==== FIN Convenio 1 - LimitesCliente - Service - Actualizar ====";
 		
-		public static final String MONEDASCONSULTASERVICEI    = "==== INICIO Convenio 1 - Monedas Consultas ====";
-		public static final String MONEDASCONSULTASERVICEF    = "==== FIN Convenio 1 - Monedas Consultas ====";
+		public static final String LIMITESCLIENTESCONSULTASERVICEI    = "==== INICIO Convenio 1 - LimitesCliente Consultas ====";
+		public static final String LIMITESCLIENTESCONSULTASERVICEF    = "==== FIN Convenio 1 - LimitesCliente Consultas ====";
 		
 		//Auditoria
 		
@@ -132,8 +154,12 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class ExceptionMessages{
+		
+		private ExceptionMessages() {
+			super();
+		}
 		
 		public static final String UNIRESTHTTPE         = "HttpStatusCodeException: %1$s";
 		public static final String UNIRESTBODYE         = "ResponseBody: %1$s";
@@ -144,15 +170,33 @@ public class Codigos {
 	}
 		
 	
-	@Data
-	public class InfoMessages {
 	
+	public class InfoMessages {
+		
+		private InfoMessages() {
+			super();
+		}
 		// Auditoria Service
     	public static final String AUREQUEST                = "Request = [{}]";
     	public static final String AUPRINTINFO              = "registrar Auditoria respuesta: ";
 	}
 		
+	public class SQLUtils{
 		
+		private SQLUtils() {
+			super();
+		}
+		
+		public static final String SELECTLIMITESCLIENTES ="SELECT cod_ibs, cod_moneda, tipo_transaccion, monto_min, monto_max, monto_tope, monto_mensual, monto_diario,"
+				+ "flag_activo, cod_usuario, fecha_modificacion "
+				+ "FROM \"Convenio1\".\"Limites_personalizados\" "
+				+ "where cod_ibs= (case when ?1 = '' then cod_ibs else ?1 end) "
+				+ "and cod_moneda= (case when ?2 = '' then cod_moneda else ?2 end) "
+				+ "and tipo_transaccion= (case when ?3 = '' then tipo_transaccion else ?3 end) "
+				+ "and case when  ?4 = 'si' then flag_activo= ?5 else flag_activo = flag_activo end";
+			  
+				
+	}	
 		
 	
 	

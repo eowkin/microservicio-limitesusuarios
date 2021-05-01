@@ -10,7 +10,6 @@ import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDtoResponseActualizar;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestConsulta;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestCrear;
-import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizados;
 import com.bancoexterior.parametros.limitesusuarios.entities.LimitesPersonalizadosPk;
 
 

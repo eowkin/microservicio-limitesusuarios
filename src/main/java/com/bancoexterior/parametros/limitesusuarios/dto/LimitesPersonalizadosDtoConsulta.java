@@ -3,7 +3,6 @@ package com.bancoexterior.parametros.limitesusuarios.dto;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.bancoexterior.parametros.limitesusuarios.config.Codigos.CodRespuesta;

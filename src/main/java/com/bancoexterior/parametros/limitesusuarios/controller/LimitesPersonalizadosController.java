@@ -24,7 +24,7 @@ import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosDto
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestConsulta;
 import com.bancoexterior.parametros.limitesusuarios.dto.LimitesPersonalizadosRequestCrear;
 import com.bancoexterior.parametros.limitesusuarios.service.ILimitesPersonalizadosService;
-import com.bancoexterior.parametros.limitesusuarios.util.Utils;
+import com.bancoexterior.parametros.limitesusuarios.util.LibreriaUtils;
 import com.bancoexterior.parametros.limitesusuarios.validator.ILimitesPersonalizadosValidator;
 
 
@@ -65,7 +65,7 @@ public class LimitesPersonalizadosController {
 		LimitesPersonalizadosDtoResponse response;
 		HttpStatus estatusCM;
 		response = limitesPersonalizadosService.consultaLimitesPersonalizados(limitesPersonalizadosRequestConsulta);
-		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		estatusCM = LibreriaUtils.getHttpStatus(response.getResultado().getCodigo().trim());
 		
 		LOGGER.info(estatusCM);
 		LOGGER.info(response);
@@ -104,11 +104,9 @@ public class LimitesPersonalizadosController {
 		LimitesPersonalizadosDtoResponseActualizar response;
 		HttpStatus estatusCM;
 		response = limitesPersonalizadosService.crear(request, requestHTTP);
-		//response = limitesPersonalizadosService.consultaLimitesPersonalizados(limitesPersonalizadosRequestConsulta);
-		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
 		
-		LOGGER.info(estatusCM);
-		LOGGER.info(response);
+		estatusCM = LibreriaUtils.getHttpStatus(response.getResultado().getCodigo().trim());
+		
 		LOGGER.info(Servicios.LIMITESCLIENTECONTROLLERF);
 		if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
 			return new ResponseEntity<>(response,estatusCM);
@@ -144,10 +142,8 @@ public class LimitesPersonalizadosController {
 		LimitesPersonalizadosDtoResponseActualizar response;
 		HttpStatus estatusCM;
 		response = limitesPersonalizadosService.actualizar(request, requestHTTP);
-		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		estatusCM = LibreriaUtils.getHttpStatus(response.getResultado().getCodigo().trim());
 		
-		LOGGER.info(estatusCM);
-		LOGGER.info(response);
 		LOGGER.info(Servicios.LIMITESCLIENTECONTROLLERF);
 		if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
 			return new ResponseEntity<>(response,estatusCM);
