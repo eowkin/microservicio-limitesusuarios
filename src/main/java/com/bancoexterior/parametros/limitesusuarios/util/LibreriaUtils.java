@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.bancoexterior.parametros.limitesusuarios.config.Codigos.Constantes;
 
-import lombok.extern.slf4j.Slf4j;
 
 
 @Component
@@ -25,7 +24,7 @@ public class LibreriaUtils {
 	
 	private LibreriaUtils() {
 		
-	}	
+	}
 	/**
      * Nombre:                  getHttpStatus
      * Descripcion:             Obtener Status HTTP cuando la peticion dio resultado incorrecto
